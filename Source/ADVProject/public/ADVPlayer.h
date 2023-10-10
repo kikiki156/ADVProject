@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "ADVPlayer.generated.h"
 
+
 UCLASS()
 class ADVPROJECT_API AADVPlayer : public ACharacter
 {
@@ -26,4 +27,19 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+public:
+	UPROPERTY(VisibleAnywhere, Category=Camera)
+	class USpringArmComponent* springArmComp;
+	UPROPERTY(VisibleAnywhere, Category=Camera)
+	class UCameraComponent* tpsCamComp;
+
+	void LookVertical(float value);
+	void LookHorizontal(float value);
+
+	UPROPERTY(EditAnywhere, Category = PlayerSetting)
+	float walkSpeed = 200;
+	FVector direction;
+
+	void MoveVertical(float value);
+	void MoveHorizontal(float value);
 };
