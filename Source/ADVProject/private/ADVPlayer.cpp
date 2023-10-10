@@ -4,7 +4,7 @@
 #include "ADVPlayer.h"
 #include <GameFramework/SpringArmComponent.h>
 #include <Camera/CameraComponent.h>
-
+#include <GameFramework/CharacterMovementComponent.h>
 // Sets default values
 AADVPlayer::AADVPlayer()
 {
@@ -34,7 +34,7 @@ AADVPlayer::AADVPlayer()
 void AADVPlayer::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	GetCharacterMovement()->MaxWalkSpeed = walkSpeed;
 }
 
 // Called every frame
