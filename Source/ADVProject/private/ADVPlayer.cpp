@@ -55,6 +55,8 @@ void AADVPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 	PlayerInputComponent->BindAxis(TEXT("LookHorizontal"), this, &AADVPlayer::LookHorizontal);
 	PlayerInputComponent->BindAxis(TEXT("MoveVertical"), this, &AADVPlayer::MoveVertical);
 	PlayerInputComponent->BindAxis(TEXT("MoveHorizontal"), this, &AADVPlayer::MoveHorizontal);
+	PlayerInputComponent->BindAction(TEXT("Run"), IE_Pressed, this, &AADVPlayer::InputRun);
+	PlayerInputComponent->BindAction(TEXT("Run"), IE_Released, this, &AADVPlayer::InputRun);
 }
 
 void AADVPlayer::LookVertical(float value) {
@@ -68,4 +70,15 @@ void AADVPlayer::MoveVertical(float value) {
 }
 void AADVPlayer::MoveHorizontal(float value) {
 	direction.Y = value;
+}
+
+void AADVPlayer::InputRun() {
+	auto movement = GetCharacterMovement();
+
+	if (movement->MaxWalkSpeed > walkSpeed) {
+		movement->MaxWalkSpeed = walkSpeed;
+	}
+	else {
+		movement->MaxWalkSpeed = runSpeed;
+	}
 }
