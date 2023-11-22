@@ -3,6 +3,7 @@
 
 #include "PlayerAnim.h"
 #include "ADVPlayer.h"
+#include <GameFramework/CharacterMovementComponent.h>
 
 void UPlayerAnim::NativeUpdateAnimation(float DeltaSeconds) {
 	Super::NativeUpdateAnimation(DeltaSeconds);
@@ -18,5 +19,19 @@ void UPlayerAnim::NativeUpdateAnimation(float DeltaSeconds) {
 
 		FVector rightVector = player->GetActorRightVector();
 		horizontalSpeed = FVector::DotProduct(rightVector, velocity);
+
+		auto movement = player->GetCharacterMovement();
+		isInAir = movement->IsFalling();
+
+		if (player->bArmed) 
+			isEquip = true;
+		else
+			isEquip = false;
+
+		if (player->bBowAim)
+			isAiming = true;
+		else 
+			isAiming = false;
+		
 	}
 }
