@@ -153,7 +153,8 @@ void AADVPlayer::InputAim() {
 	bBowAim = true;
 	springArmComp->SetRelativeLocation(FVector(0, 70, 90));
 	tpsCamComp->SetFieldOfView(45.0f);
-
+	FTransform shootPosition = GetMesh()->GetSocketTransform(TEXT("RightHandThumb2Socket"));
+	GetWorld()->SpawnActor<AArrow>(arrowFactory, shootPosition);
 
 }
 
@@ -161,8 +162,6 @@ void AADVPlayer::InputShoot() {
 	if (!bArmed) {
 		return;
 	}
-	FTransform shootPosition = armedBowMeshComp->GetSocketTransform(TEXT("ShootPosition"));
-	GetWorld()->SpawnActor<AArrow>(arrowFactory, shootPosition);
 	bBowAim = false;
 	springArmComp->SetRelativeLocation(FVector(0, 0, 90));
 	tpsCamComp->SetFieldOfView(90.0f);

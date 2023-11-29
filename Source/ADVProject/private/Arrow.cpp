@@ -12,7 +12,6 @@ AArrow::AArrow()
 
 	colliComp = CreateDefaultSubobject<UCapsuleComponent>(TEXT("CollisionComp"));
 	colliComp->SetCollisionProfileName(TEXT("BlockAll"));
-	colliComp->AddLocalRotation(FRotator(-90, 0, 90));
 	RootComponent = colliComp;
 
 	bodyComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BodyMeshComp"));
@@ -23,7 +22,7 @@ AArrow::AArrow()
 	movementComp = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("MovementComp"));
 	movementComp->SetUpdatedComponent(colliComp);
 
-	movementComp->InitialSpeed = 5000;
+	movementComp->InitialSpeed = 0;
 	movementComp->MaxSpeed = 5000;
 	movementComp->bShouldBounce = false;
 	
