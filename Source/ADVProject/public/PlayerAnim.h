@@ -13,13 +13,23 @@ UCLASS()
 class ADVPROJECT_API UPlayerAnim : public UAnimInstance
 {
 	GENERATED_BODY()
-	
+
 public:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category=PlayerAnim)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = PlayerAnim)
 	float verticalSpeed = 0;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = PlayerAnim)
 	float horizontalSpeed = 0;
 
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = PlayerAnim)
+	bool isInAir = false;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = PlayerAnim)
+	bool isEquip = false;
+
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category=PlayerAnim)
+	bool isAiming = false;
 };

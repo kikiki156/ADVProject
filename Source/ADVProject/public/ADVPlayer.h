@@ -39,12 +39,32 @@ public:
 	UPROPERTY(EditAnywhere, Category = PlayerSetting)
 	float walkSpeed = 200;
 	UPROPERTY(EditAnywhere, Category = PlayerSetting)
-	float runSpeed = 400;
+	float runSpeed = 600;
 
 	FVector direction;
 
 	void MoveVertical(float value);
 	void MoveHorizontal(float value);
 
+	void InputJump();
+
 	void InputRun();
+
+	void InputEquip();
+
+	bool bArmed = false;
+
+	UPROPERTY(VisibleAnywhere, Category=BowMesh)
+	class USkeletalMeshComponent* unarmedBowMeshComp;
+
+	UPROPERTY(VisibleAnywhere, Category = BowMesh)
+	class USkeletalMeshComponent* armedBowMeshComp;
+
+	UPROPERTY(EditDefaultsOnly, Category=ArrowFactory)
+	TSubclassOf<class AArrow> arrowFactory;
+
+	void InputShoot();
+	void InputAim();
+
+	bool bBowAim = false;
 };
