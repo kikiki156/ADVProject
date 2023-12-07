@@ -67,4 +67,48 @@ public:
 	void InputAim();
 
 	bool bBowAim = false;
+
+	void IdleAim();
+
+	UPROPERTY(EditDefaultsOnly, Category=CrosshairUI)
+	TSubclassOf<class UUserWidget> crosshairUIFactory;
+
+	class UUserWidget* _crosshairUI;
+
+	UPROPERTY(VisibleAnywhere, Category=Arrow)
+	AArrow* spawnArrow;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Arrow)
+	int32 magazine;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Arrow)
+	int32 initMagazine=5;
+
+	UPROPERTY(VisibleAnywhere, Category = ArrowFactory)
+	FTransform shootPosition;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category=Health)
+	int32 hp;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Health)
+	int32 initialHp = 100;
+
+	UFUNCTION(BlueprintCallable, Category = Health)
+	void OnHitEvent();
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category=Stamina)
+	void OnGameOver();
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Stamina)
+	float stamina;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Stamina)
+	float initialStamina = 100.0f;
+
+	bool bExhausted = false;
+
+	UPROPERTY(EditDefaultsOnly, Category = Stamina)
+	FTimerHandle staminaTimer;
+
+	float staminaDrainRate;
 };

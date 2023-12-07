@@ -32,4 +32,11 @@ public:
 
 	UPROPERTY(VisibleAnywhere, Category=BodyMesh)
 	class UStaticMeshComponent* bodyComp;
+
+	void Shoot(const FVector& Direction);
+
+	bool bCanInteract();
+
+	UPROPERTY(EditAnywhere, Category = Interact)
+	bool isShooted = false;
 };

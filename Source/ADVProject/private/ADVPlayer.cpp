@@ -7,6 +7,10 @@
 #include <GameFramework/CharacterMovementComponent.h>
 #include "PlayerAnim.h"
 #include "Arrow.h"
+#include "ADVProject.h"
+#include <Kismet/GameplayStatics.h>
+#include <Blueprint/UserWidget.h>
+
 // Sets default values
 AADVPlayer::AADVPlayer()
 {
@@ -62,15 +66,41 @@ void AADVPlayer::BeginPlay()
 {
 	Super::BeginPlay();
 	GetCharacterMovement()->MaxWalkSpeed = walkSpeed;
+	hp = initialHp;
+	stamina = initialStamina;
+	magazine = initMagazine;
+	staminaDrainRate = 20.f;
+	_crosshairUI = CreateWidget(GetWorld(), crosshairUIFactory);
 }
 
 // Called every frame
 void AADVPlayer::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	float deltaStamina = staminaDrainRate * DeltaTime;
 	direction = FTransform(GetControlRotation()).TransformVector(direction);
 	AddMovementInput(direction);
 	direction = FVector::ZeroVector;
+	if (bBowAim) {
+		IdleAim();
+	}
+	if (GetCharacterMovement()->MaxWalkSpeed == runSpeed) {
+		stamina -= deltaStamina;	
+	}
+	else if (stamina <= 0.f && !bExhausted) {
+		bExhausted = true;
+	}
+	else if (bExhausted) {
+		stamina += deltaStamina*2.f;
+		if (stamina > initialStamina) {
+			stamina = initialStamina;
+			bExhausted = false;
+		}
+	}
+	else if (GetCharacterMovement()->MaxWalkSpeed == walkSpeed && stamina+deltaStamina<=initialStamina) {
+		stamina += deltaStamina;
+	}
 }
 
 // Called to bind functionality to input
@@ -88,8 +118,6 @@ void AADVPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 	PlayerInputComponent->BindAction(TEXT("Equip"), IE_Pressed, this, &AADVPlayer::InputEquip);
 	PlayerInputComponent->BindAction(TEXT("AimandShoot"), IE_Pressed, this, &AADVPlayer::InputAim);
 	PlayerInputComponent->BindAction(TEXT("AimandShoot"), IE_Released, this, &AADVPlayer::InputShoot);
-	
-
 }
 
 void AADVPlayer::LookVertical(float value) {
@@ -106,10 +134,16 @@ void AADVPlayer::MoveHorizontal(float value) {
 }
 
 void AADVPlayer::InputJump() {
-	Jump();
+	if (!bArmed) {
+		Jump();
+	}
+
 }
 
 void AADVPlayer::InputRun() {
+	if (bExhausted) {
+		return;
+	}
 	auto movement = GetCharacterMovement();
 
 	if (movement->MaxWalkSpeed > walkSpeed) {
@@ -146,23 +180,46 @@ void AADVPlayer::InputEquip() {
 }
 
 void AADVPlayer::InputAim() {
-	if (!bArmed) {
+	if (!bArmed || magazine<=0) {
 		return;
 	}
 
 	bBowAim = true;
+	_crosshairUI->AddToViewport();
 	springArmComp->SetRelativeLocation(FVector(0, 70, 90));
 	tpsCamComp->SetFieldOfView(45.0f);
-	FTransform shootPosition = GetMesh()->GetSocketTransform(TEXT("RightHandThumb2Socket"));
-	GetWorld()->SpawnActor<AArrow>(arrowFactory, shootPosition);
+	shootPosition = GetMesh()->GetSocketTransform(TEXT("RightHandThumb2Socket"));
+	spawnArrow = GetWorld()->SpawnActor<AArrow>(arrowFactory);
+}
 
+void AADVPlayer::IdleAim() {
+	shootPosition = GetMesh()->GetSocketTransform(TEXT("RightHandThumb2Socket"));
+	spawnArrow->SetActorTransform(shootPosition);
 }
 
 void AADVPlayer::InputShoot() {
-	if (!bArmed) {
+	if (!bArmed || magazine <= 0) {
 		return;
 	}
+
+	spawnArrow->SetActorRotation(GetController()->GetControlRotation());
+	spawnArrow->AddActorLocalRotation(FRotator(-90, 0, 0));
+	spawnArrow->Shoot(GetController()->GetControlRotation().Vector());
+
+	magazine--;
 	bBowAim = false;
+	_crosshairUI->RemoveFromParent();
 	springArmComp->SetRelativeLocation(FVector(0, 0, 90));
 	tpsCamComp->SetFieldOfView(90.0f);
+}
+
+void AADVPlayer::OnHitEvent() {
+	hp = hp-10;
+	if (hp <= 0) {
+		OnGameOver();
+	}
+}
+
+void AADVPlayer::OnGameOver_Implementation() {
+	UGameplayStatics::SetGamePaused(GetWorld(), true);
 }
